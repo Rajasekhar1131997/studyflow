@@ -5,7 +5,7 @@ import { Assignment } from "@/lib/supabase";
 
 interface AssignmentChatbotProps {
   assignment: Assignment;
-  onClose: () => void;
+  onClose?: () => void;
 }
 
 interface Message {
@@ -94,149 +94,102 @@ Help them understand concepts, provide study strategies, and guide their learnin
   }
 
   return (
-    <div className="fixed inset-0 bg-white z-50 flex flex-col overflow-hidden">
-        {/* Header - ChatGPT Style */}
-        <div className="flex items-center justify-between px-8 py-4 border-b border-gray-200 bg-white">
-          <div className="flex items-center gap-6">
-            <button
-              onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 transition-colors p-2 hover:bg-gray-100 rounded-lg"
-              aria-label="Close"
+    <div className="bg-gradient-to-br from-slate-800 via-gray-800 to-slate-900 rounded-xl shadow-2xl flex flex-col overflow-hidden h-[calc(100vh-12rem)] sticky top-6 border border-gray-700/50">
+      {/* Header */}
+      <div className="px-4 py-4 border-b border-gray-700/50 bg-gradient-to-r from-[#76B900] to-[#0ea5e9]">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="w-10 h-10 rounded-lg bg-white/10 backdrop-blur-sm flex items-center justify-center">
+            <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M18 10c0 3.866-3.582 7-8 7a8.841 8.841 0 01-4.083-.98L2 17l1.338-3.123C2.493 12.767 2 11.434 2 10c0-3.866 3.582-7 8-7s8 3.134 8 7zM7 9H5v2h2V9zm8 0h-2v2h2V9zM9 9h2v2H9V9z" clipRule="evenodd" />
+            </svg>
+          </div>
+          <div className="flex-1">
+            <h3 className="text-lg font-bold text-white">
+              AI Study Assistant
+            </h3>
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <p className="text-xs text-white/80">Online & Ready</p>
+            </div>
+          </div>
+        </div>
+        <p className="text-sm text-white/90 bg-white/10 rounded-lg px-3 py-2 backdrop-blur-sm">
+          💬 Ask me anything about this assignment
+        </p>
+      </div>
+
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gradient-to-b from-slate-900 to-gray-900">
+        {messages.map((message, index) => (
+          <div
+            key={index}
+            className={`flex ${
+              message.role === "user" ? "justify-end" : "justify-start"
+            } animate-fadeIn`}
+          >
+            <div
+              className={`max-w-[85%] p-4 rounded-2xl shadow-lg ${
+                message.role === "user"
+                  ? "bg-gradient-to-r from-[#76B900] to-[#0ea5e9] text-white"
+                  : "bg-slate-800 text-gray-100 border border-gray-700/50"
+              }`}
             >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-6 w-6"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900">
-                {assignment.title}
-              </h3>
-              <p className="text-sm text-gray-500">
-                AI Study Assistant • {Math.ceil((new Date(assignment.due_date).getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24))} days left
+              <p className="text-sm whitespace-pre-wrap leading-relaxed">
+                {message.content}
               </p>
             </div>
           </div>
+        ))}
+        
+        {loading && (
+          <div className="flex justify-start animate-fadeIn">
+            <div className="bg-slate-800 p-4 rounded-2xl shadow-lg border border-gray-700/50">
+              <div className="flex gap-2 items-center">
+                <div className="w-2 h-2 bg-gradient-to-r from-[#76B900] to-[#0ea5e9] rounded-full animate-bounce"></div>
+                <div
+                  className="w-2 h-2 bg-gradient-to-r from-[#76B900] to-[#0ea5e9] rounded-full animate-bounce"
+                  style={{ animationDelay: "0.15s" }}
+                ></div>
+                <div
+                  className="w-2 h-2 bg-gradient-to-r from-[#76B900] to-[#0ea5e9] rounded-full animate-bounce"
+                  style={{ animationDelay: "0.3s" }}
+                ></div>
+                <span className="text-xs text-gray-400 ml-2">AI is thinking...</span>
+              </div>
+            </div>
+          </div>
+        )}
+        <div ref={messagesEndRef} />
+      </div>
+
+      {/* Input Area */}
+      <form onSubmit={sendMessage} className="p-4 bg-gradient-to-br from-slate-800 to-gray-900 border-t border-gray-700/50">
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder="Type your question..."
+            disabled={loading}
+            className="flex-1 px-4 py-3 bg-slate-700/50 border border-gray-600/50 rounded-xl focus:ring-2 focus:ring-[#76B900] focus:border-transparent disabled:opacity-50 text-sm text-white placeholder-gray-400 transition-all"
+          />
           <button
-            onClick={() => {
-              if (confirm("Mark this assignment as submitted?")) {
-                // You can add logic here to update the assignment status
-                alert("Assignment marked as submitted!");
-                onClose();
-              }
-            }}
-            className="px-6 py-2.5 bg-gradient-to-r from-[#DF8908] to-[#B415FF] text-white font-semibold rounded-lg hover:opacity-90 transition-opacity shadow-md"
+            type="submit"
+            disabled={loading || !input.trim()}
+            className="bg-gradient-to-r from-[#76B900] to-[#0ea5e9] text-white p-3 rounded-xl hover:shadow-lg hover:scale-105 transition-all disabled:opacity-50 disabled:scale-100"
+            aria-label="Send message"
           >
-            Submit Assignment
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+            >
+              <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
+            </svg>
           </button>
         </div>
-
-        {/* Messages - ChatGPT Style */}
-        <div className="flex-1 overflow-y-auto">
-          {messages.map((message, index) => (
-            <div
-              key={index}
-              className={`w-full ${
-                message.role === "assistant" ? "bg-gray-50" : "bg-white"
-              } border-b border-gray-100`}
-            >
-              <div className="max-w-5xl mx-auto px-8 py-6">
-                <div className="flex gap-4">
-                  {/* Avatar */}
-                  <div className="flex-shrink-0">
-                    <div
-                      className={`w-8 h-8 rounded-sm flex items-center justify-center font-semibold text-white ${
-                        message.role === "assistant"
-                          ? "bg-gradient-to-br from-[#DF8908] to-[#B415FF]"
-                          : "bg-purple-600"
-                      }`}
-                    >
-                      {message.role === "assistant" ? "AI" : "U"}
-                    </div>
-                  </div>
-                  {/* Message Content */}
-                  <div className="flex-1 space-y-2">
-                    <p className="text-gray-800 leading-relaxed whitespace-pre-wrap">
-                      {message.content}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </div>
-          ))}
-          
-          {loading && (
-            <div className="w-full bg-gray-50 border-b border-gray-100">
-              <div className="max-w-5xl mx-auto px-8 py-6">
-                <div className="flex gap-4">
-                  <div className="flex-shrink-0">
-                    <div className="w-8 h-8 rounded-sm flex items-center justify-center font-semibold text-white bg-gradient-to-br from-[#DF8908] to-[#B415FF]">
-                      AI
-                    </div>
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex gap-1">
-                      <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
-                      <div
-                        className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                        style={{ animationDelay: "0.1s" }}
-                      ></div>
-                      <div
-                        className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"
-                        style={{ animationDelay: "0.2s" }}
-                      ></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
-
-        {/* Input Area - ChatGPT Style */}
-        <div className="border-t border-gray-200 bg-white">
-          <form onSubmit={sendMessage} className="max-w-5xl mx-auto p-6">
-            <div className="flex items-center gap-3 bg-white border border-gray-300 rounded-lg shadow-sm focus-within:border-gray-400 focus-within:shadow-md transition-all">
-              <input
-                type="text"
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Message StudyFlow AI..."
-                disabled={loading}
-                className="flex-1 px-4 py-3 bg-transparent focus:outline-none disabled:opacity-50"
-              />
-              <button
-                type="submit"
-                disabled={loading || !input.trim()}
-                className="mr-2 p-2 text-white bg-gradient-to-r from-[#DF8908] to-[#B415FF] rounded-lg hover:opacity-90 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                aria-label="Send"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                >
-                  <path d="M10.894 2.553a1 1 0 00-1.788 0l-7 14a1 1 0 001.169 1.409l5-1.429A1 1 0 009 15.571V11a1 1 0 112 0v4.571a1 1 0 00.725.962l5 1.428a1 1 0 001.17-1.408l-7-14z" />
-                </svg>
-              </button>
-            </div>
-            <p className="text-xs text-gray-500 text-center mt-2">
-              AI can make mistakes. Check important info.
-            </p>
-          </form>
-    </div>
+      </form>
     </div>
   );
 }

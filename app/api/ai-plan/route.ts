@@ -24,13 +24,17 @@ Title: ${title}
 Description: ${description}
 Days remaining: ${daysLeft} days
 
-Please create a detailed study plan that:
-1. Breaks down the assignment into daily milestones
-2. Provides specific study tips and strategies
-3. Includes time management recommendations
-4. Suggests resources or approaches for each milestone
+IMPORTANT: Create a study plan that covers ALL ${daysLeft} days from Day 1 to Day ${daysLeft}.
 
-Format the plan in a clear, actionable way that the student can follow.`;
+Please create a detailed study plan that:
+1. Breaks down the assignment into daily milestones for EACH of the ${daysLeft} days
+2. Start with "Day 1:" and continue through "Day ${daysLeft}:"
+3. Provides specific study tips and strategies for each day
+4. Includes time management recommendations
+5. Suggests resources or approaches for each milestone
+6. Make sure to include every single day from Day 1 through Day ${daysLeft}
+
+Format the plan clearly with each day labeled as "Day X:" followed by the tasks for that day.`;
 
     const nvidiaResponse = await fetch(
       "https://integrate.api.nvidia.com/v1/chat/completions",

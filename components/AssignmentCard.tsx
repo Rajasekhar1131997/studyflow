@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Assignment } from "@/lib/supabase";
 
 interface AssignmentCardProps {
@@ -12,6 +13,7 @@ export default function AssignmentCard({
   assignment,
   onUpdate,
 }: AssignmentCardProps) {
+  const router = useRouter();
   const [generating, setGenerating] = useState(false);
 
   const daysLeft = Math.ceil(
@@ -93,7 +95,10 @@ export default function AssignmentCard({
   }
 
   return (
-    <div className="bg-white/95 backdrop-blur-sm rounded-xl shadow-xl p-6 hover:shadow-2xl transition-all border border-gray-200">
+    <div 
+      onClick={() => router.push(`/assignment/${assignment.id}`)}
+      className="bg-white/95 backdrop-blur-sm rounded-xl shadow-xl p-6 hover:shadow-2xl transition-all border border-gray-200 cursor-pointer hover:scale-[1.02]"
+    >
       <div className="mb-4">
         <h3 className="text-xl font-bold text-gray-900 mb-2">
           {assignment.title}
@@ -103,19 +108,19 @@ export default function AssignmentCard({
         </p>
       </div>
 
-      {/* Progress Section with Controls */}
-      <div className="mb-4 bg-gray-50 p-4 rounded-lg border border-gray-200">
+      {/* Progress Section */}
+      <div className="mb-4 bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg border border-gray-200">
         <div className="flex justify-between items-center mb-2">
           <span className="text-sm font-semibold text-gray-700">Progress</span>
-          <span className="text-lg font-bold text-[#76B900]">
+          <span className="text-2xl font-bold text-[#76B900]">
             {assignment.progress}%
           </span>
         </div>
         
-        {/* Progress Bar - More Visible */}
-        <div className="w-full bg-gray-300 rounded-full h-4 border-2 border-gray-400 mb-3 shadow-inner">
+        {/* Progress Bar */}
+        <div className="w-full bg-gray-300 rounded-full h-4 border-2 border-gray-400 shadow-inner">
           <div
-            className="bg-gradient-to-r from-[#76B900] to-[#5a9100] h-full rounded-full transition-all duration-300 flex items-center justify-end pr-2"
+            className="bg-gradient-to-r from-[#76B900] to-[#0ea5e9] h-full rounded-full transition-all duration-500 flex items-center justify-end pr-2"
             style={{ 
               width: `${assignment.progress}%`,
               minWidth: assignment.progress > 0 ? '8%' : '0%'
@@ -128,31 +133,9 @@ export default function AssignmentCard({
             )}
           </div>
         </div>
-
-        {/* Progress Controls */}
-        <div className="flex flex-wrap gap-2">
-          <button
-            onClick={() => updateProgress(Math.max(0, assignment.progress - 10))}
-            className="flex-1 min-w-[70px] px-3 py-2 bg-white border-2 border-gray-300 hover:border-gray-400 hover:bg-gray-50 text-gray-700 text-sm font-medium rounded-lg transition-all"
-            title="Decrease progress by 10%"
-          >
-            -10%
-          </button>
-          <button
-            onClick={() => updateProgress(Math.min(100, assignment.progress + 10))}
-            className="flex-1 min-w-[70px] px-3 py-2 bg-[#76B900] hover:bg-[#5a9100] border-2 border-[#76B900] text-white text-sm font-semibold rounded-lg transition-all shadow-md"
-            title="Increase progress by 10%"
-          >
-            +10%
-          </button>
-          <button
-            onClick={() => updateProgress(100)}
-            className="flex-1 min-w-[90px] px-3 py-2 bg-green-600 hover:bg-green-700 border-2 border-green-600 text-white text-sm font-semibold rounded-lg transition-all shadow-md"
-            title="Mark as 100% complete"
-          >
-            ✓ Complete
-          </button>
-        </div>
+        <p className="text-xs text-gray-500 mt-2 text-center">
+          Submit work to update progress automatically
+        </p>
       </div>
 
       <div className="mb-4 flex items-center justify-between">
@@ -170,31 +153,13 @@ export default function AssignmentCard({
         </div>
       </div>
 
-      <div className="space-y-2">
-        <button
-          onClick={generateAIPlan}
-          disabled={generating}
-          className="w-full bg-gradient-to-r from-[#76B900] to-[#5a9100] text-white font-semibold py-2 px-4 rounded-lg hover:shadow-lg transition-all disabled:opacity-50"
-        >
-          {generating ? "Generating..." : "🤖 Generate AI Plan"}
-        </button>
-        <button
-          onClick={() => {
-            const chatButton = document.getElementById('floating-chatbot-button');
-            if (chatButton) {
-              chatButton.click();
-            }
-          }}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
-        >
-          💬 Chat with AI
-        </button>
-        <button
-          onClick={submitAssignment}
-          className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors"
-        >
-          ✅ Submit Assignment
-        </button>
+      <div className="mt-4 text-center">
+        <div className="inline-flex items-center gap-2 text-[#76B900] font-semibold text-sm">
+          Click to view details
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+          </svg>
+        </div>
       </div>
 
       {assignment.ai_plan && (
