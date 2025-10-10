@@ -72,7 +72,7 @@ export async function GET(request: NextRequest) {
           // Send email via SendGrid
           await sgMail.send({
             to: assignment.contact,
-            from: "noreply@studyflow.app", // Replace with your verified sender
+            from: "rajasekhar1131997@gmail.com", // Replace with your verified sender
             subject: `Assignment Due Soon: ${assignment.title}`,
             text: message,
             html: `
