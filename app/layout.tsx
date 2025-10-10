@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "StudyFlow - AI Study Assistant",
-  description: "Manage assignments, track progress, and receive AI guidance",
+  description: "Manage assignments, track progress, and receive AI guidance powered by NVIDIA Nemotron 70B",
 };
 
 export default function RootLayout({
@@ -18,7 +18,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div className="min-h-screen bg-gradient-to-br from-[#DF8908] via-purple-600 to-[#B415FF]">
+        <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black">
           {children}
           <FloatingChatbot />
         </div>

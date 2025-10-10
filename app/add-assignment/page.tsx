@@ -172,7 +172,7 @@ export default function AddAssignment() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-gradient-to-r from-[#DF8908] to-[#B415FF] text-white font-semibold py-3 px-6 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50"
+              className="w-full bg-gradient-to-r from-[#76B900] to-[#5a9100] text-white font-semibold py-3 px-6 rounded-lg hover:shadow-xl hover:scale-105 transition-all disabled:opacity-50 disabled:hover:scale-100"
             >
               {loading ? "Adding..." : "Add Assignment"}
             </button>
