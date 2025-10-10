@@ -7,16 +7,30 @@ import AssignmentCard from "./AssignmentCard";
 export default function AssignmentList() {
   const [assignments, setAssignments] = useState<Assignment[]>([]);
   const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<any>(null);
 
   useEffect(() => {
-    fetchAssignments();
+    checkUserAndFetch();
   }, []);
 
-  async function fetchAssignments() {
+  async function checkUserAndFetch() {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user) {
+        setUser(session.user);
+        await fetchAssignments(session.user.id);
+      }
+    } catch (error) {
+      console.error("Error checking user:", error);
+    }
+  }
+
+  async function fetchAssignments(userId: string) {
     try {
       const { data, error } = await supabase
         .from("assignments")
         .select("*")
+        .eq("user_id", userId)
         .order("due_date", { ascending: true });
 
       if (error) throw error;
@@ -53,7 +67,7 @@ export default function AssignmentList() {
         <AssignmentCard
           key={assignment.id}
           assignment={assignment}
-          onUpdate={fetchAssignments}
+          onUpdate={() => user && fetchAssignments(user.id)}
         />
       ))}
     </div>

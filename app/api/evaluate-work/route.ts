@@ -13,6 +13,15 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // Get the current user
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      return NextResponse.json(
+        { error: "Unauthorized - Please log in" },
+        { status: 401 }
+      );
+    }
+
     // Fetch assignment details
     const { data: assignment, error: fetchError } = await supabase
       .from("assignments")
@@ -152,6 +161,7 @@ Respond in JSON format:
         content: content.substring(0, 5000), // Limit stored content
         ai_evaluation: evaluation,
         progress_added: evaluation.progress_to_add,
+        user_id: session.user.id,
       })
       .select()
       .single();

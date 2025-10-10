@@ -20,19 +20,58 @@ export default function AddAssignment() {
     setLoading(true);
 
     try {
+      // Get the current session
+      const { supabase } = await import("@/lib/supabase");
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        alert("Please log in first to add assignments.");
+        router.push("/login");
+        return;
+      }
+
       const response = await fetch("/api/add-assignment", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { 
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${session.access_token}`
+        },
         body: JSON.stringify(formData),
       });
 
-      if (!response.ok) throw new Error("Failed to add assignment");
+      const data = await response.json();
+
+      if (!response.ok) {
+        // Show specific error message
+        const errorMsg = data.error || "Failed to add assignment";
+        
+        if (response.status === 401) {
+          alert("Please log in first to add assignments.");
+          router.push("/login");
+          return;
+        }
+        
+        if (errorMsg.includes("user_id") || errorMsg.includes("column") || errorMsg.includes("violates")) {
+          alert(
+            "⚠️ Database Setup Required!\n\n" +
+            "The database needs to be updated before you can add assignments.\n\n" +
+            "Please run the SQL schemas:\n" +
+            "1. database-schema-submissions.sql\n" +
+            "2. database-schema-auth-fixed.sql\n\n" +
+            "Check the console or README for instructions."
+          );
+          console.error("Database setup required. Run the SQL schemas first.");
+          return;
+        }
+        
+        throw new Error(errorMsg);
+      }
 
       alert("Assignment added successfully!");
       router.push("/");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error adding assignment:", error);
-      alert("Failed to add assignment. Please try again.");
+      alert(error.message || "Failed to add assignment. Please try again.");
     } finally {
       setLoading(false);
     }

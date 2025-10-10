@@ -1,11 +1,77 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import AssignmentList from "@/components/AssignmentList";
+import { supabase } from "@/lib/supabase";
 
 export default function Dashboard() {
+  const router = useRouter();
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<any>(null);
+
+  useEffect(() => {
+    checkUser();
+  }, []);
+
+  async function checkUser() {
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session) {
+        router.push("/login");
+        return;
+      }
+      
+      setUser(session.user);
+    } catch (error) {
+      console.error("Error checking auth:", error);
+      router.push("/login");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function handleLogout() {
+    try {
+      await supabase.auth.signOut();
+      router.push("/login");
+    } catch (error) {
+      console.error("Error logging out:", error);
+    }
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black flex items-center justify-center">
+        <div className="text-white text-xl">Loading...</div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return null;
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black">
       <div className="container mx-auto px-4 py-8">
         <div className="max-w-6xl mx-auto">
+          {/* User Header */}
+          <div className="flex justify-between items-center mb-4">
+            <div className="text-white">
+              <p className="text-sm text-gray-400">Welcome back,</p>
+              <p className="text-lg font-semibold">{user?.user_metadata?.full_name || user?.email}</p>
+            </div>
+            <button
+              onClick={handleLogout}
+              className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-lg transition-colors"
+            >
+              Logout
+            </button>
+          </div>
+
           {/* Header with Branding - Centered */}
           <header className="mb-8 text-center">
             <div className="mb-6">
