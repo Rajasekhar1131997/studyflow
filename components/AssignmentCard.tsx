@@ -199,10 +199,10 @@ export default function AssignmentCard({
 
       {assignment.ai_plan && (
         <div className="mt-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
-          <p className="text-xs font-semibold text-blue-800 mb-1">
+          <p className="text-xs font-semibold text-blue-800 mb-2">
             AI Study Plan
           </p>
-          <p className="text-xs text-gray-700 line-clamp-3">
+          <p className="text-xs text-gray-700 max-h-32 overflow-y-auto pr-2">
             {assignment.ai_plan}
           </p>
         </div>
