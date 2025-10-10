@@ -98,7 +98,7 @@ export default function AssignmentCard({
         <h3 className="text-xl font-bold text-gray-900 mb-2">
           {assignment.title}
         </h3>
-        <p className="text-gray-600 text-sm line-clamp-2">
+        <p className="text-gray-600 text-sm max-h-24 overflow-y-auto">
           {assignment.description}
         </p>
       </div>
