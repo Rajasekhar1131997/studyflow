@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import FloatingChatbot from "@/components/FloatingChatbot";
+import { Analytics } from "@vercel/analytics/react";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,6 +22,7 @@ export default function RootLayout({
         <div className="min-h-screen bg-gradient-to-br from-slate-900 via-gray-900 to-black">
           {children}
           <FloatingChatbot />
+          <Analytics />
         </div>
       </body>
     </html>
